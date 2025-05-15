@@ -1,8 +1,7 @@
 import { TodoistApi } from '@doist/todoist-api-typescript'
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
-import { registerAddCommentToProject } from './tools/add-comment-to-project.js'
-import { registerAddCommentToTask } from './tools/add-comment-to-task.js'
+import { registerAddComment } from './tools/add-comment.js'
 import { registerAddLabel } from './tools/add-label.js'
 import { registerAddProject } from './tools/add-project.js'
 import { registerAddSection } from './tools/add-section.js'
@@ -14,8 +13,10 @@ import { registerDeleteProject } from './tools/delete-project.js'
 import { registerDeleteSection } from './tools/delete-section.js'
 import { registerDeleteTask } from './tools/delete-task.js'
 import { registerGetComment } from './tools/get-comment.js'
+import { registerGetComments } from './tools/get-comments.js'
 import { registerGetLabel } from './tools/get-label.js'
 import { registerGetLabels } from './tools/get-labels.js'
+import { registerGetProductivityStats } from './tools/get-productivity-stats.js'
 import { registerGetProjectCollaborators } from './tools/get-project-collaborators.js'
 import { registerGetProjectComments } from './tools/get-project-comments.js'
 import { registerGetProject } from './tools/get-project.js'
@@ -26,10 +27,11 @@ import { registerGetSharedLabels } from './tools/get-shared-labels.js'
 import { registerGetTaskComments } from './tools/get-task-comments.js'
 import { registerGetTask } from './tools/get-task.js'
 import { registerGetTasksByFilter } from './tools/get-tasks-by-filter.js'
+import { registerGetTasksCompletedByCompletionDate } from './tools/get-tasks-completed-by-completion-date.js'
+import { registerGetTasksCompletedByDueDate } from './tools/get-tasks-completed-by-due-date.js'
 import { registerGetTasks } from './tools/get-tasks.js'
-import { registerMoveTaskToParent } from './tools/move-task-to-parent.js'
-import { registerMoveTaskToProject } from './tools/move-task-to-project.js'
-import { registerMoveTaskToSection } from './tools/move-task-to-section.js'
+import { registerMoveTasks } from './tools/move-tasks.js'
+import { registerQuickAddTask } from './tools/quick-add-task.js'
 import { registerRemoveSharedLabel } from './tools/remove-shared-label.js'
 import { registerRenameSharedLabel } from './tools/rename-shared-label.js'
 import { registerReopenTask } from './tools/reopen-task.js'
@@ -56,19 +58,21 @@ registerGetProjects(server, api)
 registerGetProject(server, api)
 registerUpdateProject(server, api)
 registerDeleteProject(server, api)
-registerMoveTaskToParent(server, api)
 
 /* Collaborators */
 registerGetProjectCollaborators(server, api)
 
 /* Tasks */
 registerAddTask(server, api)
+registerQuickAddTask(server, api)
 registerGetTask(server, api)
 registerGetTasks(server, api)
+registerGetTasksCompletedByCompletionDate(server, api)
+registerGetTasksCompletedByDueDate(server, api)
+registerGetProductivityStats(server, api)
 registerUpdateTask(server, api)
 registerCloseTask(server, api)
-registerMoveTaskToProject(server, api)
-registerMoveTaskToSection(server, api)
+registerMoveTasks(server, api)
 registerDeleteTask(server, api)
 registerReopenTask(server, api)
 registerGetTasksByFilter(server, api)
@@ -81,9 +85,9 @@ registerUpdateSection(server, api)
 registerDeleteSection(server, api)
 
 /* Comments */
-registerAddCommentToProject(server, api)
-registerAddCommentToTask(server, api)
+registerAddComment(server, api)
 registerGetComment(server, api)
+registerGetComments(server, api)
 registerUpdateComment(server, api)
 registerDeleteComment(server, api)
 registerGetTaskComments(server, api)
