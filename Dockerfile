@@ -37,7 +37,7 @@ COPY package.json ./
 ENV NODE_ENV=production
 
 # Expose the necessary port (if required by the server, adjust accordingly)
-# EXPOSE 3000
+EXPOSE 3000
 
 # Define the command to run the server
 CMD ["node", "build/index.js"]
