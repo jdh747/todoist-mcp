@@ -7,11 +7,20 @@
         "todoist-mcp": "./bin/index.js"
     },
     "scripts": {
-        "build": "npm run build-tsc && npm run permissions",
-        "build-tsc": "npx tsc",
+        "dev": "bun run --watch src/index.ts",
+        "build": "bun run build-tsc && bun run permissions",
+        "build-tsc": "bunx tsc",
         "permissions": "node -e \"require('fs').chmodSync('build/index.js', '755')\"",
+        "start": "node build/index.js",
+        "start:prod": "NODE_ENV=production node build/index.js",
+        "clean": "rm -rf build",
         "format": "biome check --write",
-        "prepare": "husky || true && npm run build"
+        "format:fix": "biome check --write --fix",
+        "lint": "biome check",
+        "typecheck": "bunx tsc --noEmit",
+        "test": "bun test",
+        "prepare": "husky || true && bun run build",
+        "prebuild": "bun run clean && bun run typecheck"
     },
     "keywords": [
         "ai",
@@ -22,7 +31,7 @@
         "task-management",
         "project-management"
     ],
-    "author": "David Miotti",
+    "author": "Joshua Hayes",
     "license": "MIT",
     "description": "Connect this [Model Context Protocol](https://modelcontextprotocol.io/introduction) server to your LLM to interact with Todoist.",
     "dependencies": {
@@ -31,14 +40,13 @@
     },
     "devDependencies": {
         "@biomejs/biome": "1.9.4",
+        "@types/express": "^5.0.3",
         "@types/node": "^22.15.32",
         "husky": "9.1.7",
         "lint-staged": "16.1.2",
         "typescript": "5.8.3"
     },
     "lint-staged": {
-        "*.{js,ts,json}": [
-            "biome check --write"
-        ]
+        "*.{js,ts,json}": ["bun run format"]
     }
 }
