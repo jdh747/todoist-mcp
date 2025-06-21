@@ -17,8 +17,7 @@ function createHttpServer(createMcpServer: () => McpServer) {
 }
 
 async function main() {
-    //TODO: the port should be configurable via an environment variable
-    const PORT = 3000
+    const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000
 
     const httpServer = createHttpServer(createMCPServer)
 
