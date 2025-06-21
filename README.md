@@ -7,6 +7,7 @@ Connect this [Model Context Protocol](https://modelcontextprotocol.io/introducti
 This integration implements all the APIs available from the [Todoist TypeScript Client](https://doist.github.io/todoist-api-typescript/api/classes/TodoistApi/), providing access to:
 
 ### Task Management
+
 - Create tasks (with content, descriptions, due dates, priorities, labels, and more)
 - Create tasks with natural language (e.g., "Submit report by Friday 5pm #Work")
 - Retrieve tasks (individual, filtered, or all tasks)
@@ -18,19 +19,24 @@ This integration implements all the APIs available from the [Todoist TypeScript 
 - Delete tasks
 
 ### Project Management
+
 - Create, retrieve, update, and delete projects
 
 ### Section Management
+
 - Create, retrieve, update, and delete sections within projects
 
 ### Comment Management
+
 - Add, retrieve, update, and delete comments for tasks or projects
 
 ### Label Management
+
 - Create, retrieve, update, and delete labels
 - Manage shared labels
 
 ### Collaboration
+
 - Get collaborators for projects
 
 ## Setup
@@ -38,8 +44,29 @@ This integration implements all the APIs available from the [Todoist TypeScript 
 **Build the server app:**
 
 ```
-npm install
-npm run build
+bun install
+bun run build
+```
+
+**Run in development**
+
+```
+TODOIST_API_KEY=<key> bun dev
+```
+
+**Docker deployment:**
+
+```
+docker compose up -d
+```
+
+**Debugging:**
+
+Use the inspector to debug the server:
+
+```
+
+bunx @modelcontextprotocol/inspector
 ```
 
 **Configure Claude:**
@@ -53,33 +80,13 @@ Then, in your `claude_desktop_config.json`, add a new MCP server:
 ```
 {
     "mcpServers": {
-        "todoist-mcp": {
-            "command": "node",
-            "args": ["/path/to/repo/build/index.js"],
-            "env": {
-                "TODOIST_API_KEY": "your_todoist_api_key"
-            }
+        "default-server": {
+            "type": "streamable-http",
+            "url": "http://localhost:3000/mcp",
+            "note": "For Streamable HTTP connections, add this URL directly in your MCP Client"
         }
     }
 }
 ```
 
 You can now launch Claude desktop app and ask to update Todoist.
-
-## Distribution
-
-### Smithery
-
-[![smithery badge](https://smithery.ai/badge/@miottid/todoist-mcp)](https://smithery.ai/server/@miottid/todoist-mcp)
-
-Install Todoist MCP on Claude Desktop using [Smithery](https://smithery.ai/server/@miottid/todoist-mcp):
-
-```bash
-npx -y @smithery/cli install @miottid/todoist-mcp --client claude
-```
-
-### Glama
-
-<a href="https://glama.ai/mcp/servers/2010u29g1w">
-  <img width="380" height="200" src="https://glama.ai/mcp/servers/2010u29g1w/badge" alt="Todoist MCP server" />
-</a>
