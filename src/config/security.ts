@@ -12,6 +12,14 @@ export const SECURITY_CONFIG = {
     RATE_LIMIT_WINDOW_MS: Number.parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
     RATE_LIMIT_MAX_REQUESTS: Number.parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
 
+    // Rate limit failed login attempts
+    FAILED_LOGIN_RATE_LIMIT_WINDOW_MS: Number.parseInt(
+        process.env.FAILED_LOGIN_RATE_LIMIT_WINDOW_MS || '300000',
+    ),
+    FAILED_LOGIN_RATE_LIMIT_MAX_REQUESTS: Number.parseInt(
+        process.env.FAILED_LOGIN_RATE_LIMIT_MAX_REQUESTS || '5',
+    ), // 5 minutes
+
     // CORS Settings
     ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3001'],
 
