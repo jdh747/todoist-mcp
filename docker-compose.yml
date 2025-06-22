@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # Production service - builds self-contained image
+  todoist-mcp:
+    build: .
+    # Uncomment if your MCP server needs to expose a port
+    # ports:
+    #   - "3000:3000"
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    # Add any environment variables your app needs
+    # env_file:
+    #   - .env
+
+  # Development service - uses volumes for hot reloading
+  todoist-mcp-dev:
+    image: oven/bun:1.1-alpine
+    working_dir: /app
+    volumes:
+      - .:/app
+      - bun_modules_dev:/app/node_modules
+    environment:
+      - NODE_ENV=development
+    command: sh -c "bun install && bun run dev"
+    # ports:
+    #   - "3000:3000"
+    profiles:
+      - dev
+
+volumes:
+  bun_modules_dev:
