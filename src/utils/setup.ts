@@ -23,6 +23,8 @@ function generateSampleToken(): string {
 
     const payload = {
         sub: 'user-1',
+        iss: 'todoist-mcp', // Issuer
+        aud: 'todoist-mcp-client', // Audience
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours
     }
