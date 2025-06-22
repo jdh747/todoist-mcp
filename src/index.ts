@@ -1,29 +1,39 @@
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import express from 'express'
-import { registerRoutes } from './handlers/registerRoutes.js'
-import { registerTodoistTools } from './handlers/registerTodoistTools.js'
-
-function createMCPServer() {
-    const mcpServer = new McpServer({ name: 'todoist-mcp', version: '1.0.1' })
-    registerTodoistTools(mcpServer)
-    return mcpServer
-}
-
-function createHttpServer(createMcpServer: () => McpServer) {
-    const httpServer = express()
-    httpServer.use(express.json())
-    registerRoutes(httpServer, createMcpServer)
-    return httpServer
-}
+import { SECURITY_CONFIG, validateSecurityConfig } from './config/security.js'
+import { registerSignalHandlers } from './handlers/registerSignalHandlers.js'
+import { createHttpServer } from './utils/createHttpServer.js'
+import { createMCPServer } from './utils/createMCPServer.js'
+import { logger } from './utils/logger.js'
 
 async function main() {
-    const PORT = process.env.PORT ? Number.parseInt(process.env.PORT, 10) : 3000
+    try {
+        validateSecurityConfig()
+        logger.info('Security configuration validated successfully')
+    } catch (error) {
+        logger.error('Security configuration validation failed:', error)
+        process.exit(1)
+    }
+
+    logger.info('Starting Todoist MCP Server', {
+        port: SECURITY_CONFIG.PORT,
+        nodeEnv: SECURITY_CONFIG.NODE_ENV,
+        securityEnabled: true,
+    })
 
     const httpServer = createHttpServer(createMCPServer)
 
-    httpServer.listen(PORT, () => {
-        console.log(`MCP Stateless Streamable HTTP Server listening on port ${PORT}`)
+    const server = httpServer.listen(SECURITY_CONFIG.PORT, () => {
+        logger.info(`🔐 Secure MCP Server listening on port ${SECURITY_CONFIG.PORT}`, {
+            authMethods: ['JWT Bearer Token', 'API Key'],
+            corsOrigins: SECURITY_CONFIG.ALLOWED_ORIGINS,
+            rateLimiting: `${SECURITY_CONFIG.RATE_LIMIT_MAX_REQUESTS} requests per ${SECURITY_CONFIG.RATE_LIMIT_WINDOW_MS / 1000 / 60} minutes`,
+        })
+
+        if (SECURITY_CONFIG.NODE_ENV === 'development') {
+            logger.warn('⚠️  Running in development mode. Ensure proper security in production!')
+        }
     })
+
+    registerSignalHandlers(server)
 }
 
 main().catch((error) => {
