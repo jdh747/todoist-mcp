@@ -1,15 +1,18 @@
-# Use the official Bun image
-FROM oven/bun:1.1-alpine AS base
+# Use the official Bun image (latest stable)
+FROM oven/bun:latest AS base
 
 # Set working directory
 WORKDIR /app
 
 # Install dependencies first (for better caching)
 COPY package.json bun.lock ./
-RUN bun install --frozen-lockfile --production
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # Copy source code
 COPY . .
+
+# Install dev dependencies for build
+RUN bun install --frozen-lockfile
 
 # Build the application
 RUN bun run build
@@ -19,9 +22,6 @@ ENV NODE_ENV=production
 
 # Make the binary executable
 RUN chmod +x build/index.js
-
-# Expose port if needed (uncomment if your app serves HTTP)
-# EXPOSE 3000
 
 # Run the application
 CMD ["bun", "run", "start:prod"]
