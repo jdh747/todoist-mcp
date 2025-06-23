@@ -78,6 +78,14 @@ export function sendAuthenticationError(res: Response, message = 'Authentication
     sendSecurityError(res, 401, ERROR_CODES.UNAUTHORIZED, message)
 }
 
+export function sendJwtError(res: Response, errorCode: number, message: string): void {
+    sendSecurityError(res, 401, errorCode, message)
+}
+
+export function sendJwtAuthError(res: Response, message = 'Authentication failed'): void {
+    sendSecurityError(res, 401, ERROR_CODES.UNAUTHORIZED, message)
+}
+
 export function sendInternalServerError(res: Response): void {
     sendSecurityError(res, 500, ERROR_CODES.INTERNAL_ERROR, 'Internal server error')
 }
