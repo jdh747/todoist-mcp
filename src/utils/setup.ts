@@ -88,7 +88,7 @@ function setup() {
 
     console.log()
     console.log('🛡️  Security Recommendations:')
-    console.log('1. Store the JWT_SECRET and MCP_API_KEY securely')
+    console.log('1. Store the JWT_SECRET securely')
     console.log('2. Use HTTPS in production')
     console.log('3. Set appropriate CORS origins')
     console.log('4. Monitor logs for security events')
