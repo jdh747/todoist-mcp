@@ -23,7 +23,7 @@ async function main() {
 
     const server = httpServer.listen(SECURITY_CONFIG.PORT, () => {
         logger.info(`🔐 Secure MCP Server listening on port ${SECURITY_CONFIG.PORT}`, {
-            authMethods: ['JWT Bearer Token', 'API Key'],
+            authMethods: ['JWT Bearer Token'],
             corsOrigins: SECURITY_CONFIG.ALLOWED_ORIGINS,
             rateLimiting: `${SECURITY_CONFIG.RATE_LIMIT_MAX_REQUESTS} requests per ${SECURITY_CONFIG.RATE_LIMIT_WINDOW_MS / 1000 / 60} minutes`,
         })
