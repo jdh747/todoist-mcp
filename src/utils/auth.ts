@@ -2,6 +2,7 @@ import crypto from 'node:crypto'
 import type { Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { SECURITY_CONFIG } from '../config/security.js'
+import { JWT_CONSTANTS } from '../constants/security.js'
 import { sendAuthenticationError } from './security-responses.js'
 
 export function generateToken(
@@ -19,8 +20,8 @@ export function generateToken(
 
     const tokenPayload = {
         ...payload,
-        iss: 'todoist-mcp', // Issuer
-        aud: 'todoist-mcp-client', // Audience
+        iss: JWT_CONSTANTS.ISSUER, // Issuer
+        aud: JWT_CONSTANTS.AUDIENCE, // Audience
         iat: now, // Issued at
         jti: tokenId, // JWT ID for token tracking
         // nbf (not before) can be added if needed
@@ -28,7 +29,7 @@ export function generateToken(
 
     return jwt.sign(tokenPayload, SECURITY_CONFIG.JWT_SECRET, {
         expiresIn,
-        algorithm: 'HS256', // Explicitly specify algorithm
+        algorithm: JWT_CONSTANTS.ALGORITHM, // Explicitly specify algorithm
     } as jwt.SignOptions)
 }
 
@@ -54,6 +55,15 @@ export function isValidJWTFormat(token: string): boolean {
 
 export function sendAuthError(res: Response, message: string): void {
     sendAuthenticationError(res, message)
+}
+
+export function timingSafeStringEqual(a: string, b: string): boolean {
+    try {
+        // Constant-time comparison of fixed-length buffers
+        return crypto.timingSafeEqual(Buffer.from(a), Buffer.from(b))
+    } catch {
+        return false
+    }
 }
 
 // Extend Request interface to include auth data

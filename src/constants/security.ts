@@ -43,6 +43,13 @@ export const SECURITY_EVENT_TYPES = {
 // HTTP Methods allowed
 export const ALLOWED_HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'] as const
 
+// JWT Constants
+export const JWT_CONSTANTS = {
+    ISSUER: 'todoist-mcp',
+    AUDIENCE: 'todoist-mcp-client',
+    ALGORITHM: 'HS256',
+} as const
+
 // Security headers
 export const SECURITY_HEADERS = {
     AUTHORIZATION: 'Authorization',

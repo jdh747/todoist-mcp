@@ -1,30 +1,38 @@
 /**
- * JWT Authentication Middleware with Security Best Practices
+ * JWT Authentication Middleware with Enhanced Security
  *
- * This middleware implements secure JWT authentication with the following features:
- * - Strict JWT verification with algorithm specification
- * - Token blacklisting for revocation
- * - Rate limiting for authentication attempts
- * - Comprehensive security logging
- * - Protection against timing attacks
- * - Detailed JWT claims validation
+ * This middleware implements enterprise-grade JWT authentication with comprehensive security features:
+ * - Strict JWT verification with algorithm specification and enhanced validation
+ * - Cryptographically secure token generation with crypto.randomBytes()
+ * - Token blacklisting with automatic cleanup for revocation management
+ * - Rate limiting for authentication attempts with failed login tracking
+ * - Comprehensive security logging with detailed error classification
+ * - Protection against timing attacks using constant-time comparisons
+ * - Detailed JWT claims validation with specific error codes
  *
- * Security Features:
- * - Algorithm whitelisting (HS256 only)
- * - Issuer and audience validation
- * - Token ID (jti) tracking for blacklisting
- * - Clock skew tolerance (30 seconds)
- * - Rate limiting (5 attempts per 5 minutes per IP)
- * - Comprehensive error classification and logging
+ * Security Enhancements:
+ * - Algorithm whitelisting (HS256 only) prevents algorithm confusion attacks
+ * - Timing-safe issuer and audience validation prevents side-channel attacks
+ * - Token ID (jti) tracking with secure random generation for blacklisting
+ * - Clock skew tolerance (30 seconds) with future token detection
+ * - Rate limiting (5 attempts per 5 minutes per IP) with automatic cleanup
+ * - Granular error codes for different JWT failure scenarios
+ * - Enhanced security event logging with context and error classification
  */
 
 import type { NextFunction, Request, Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { SECURITY_CONFIG } from '../config/security.js'
-import { extractBearerToken, isValidJWTFormat, sendAuthError } from '../utils/auth.js'
+import { ERROR_CODES, JWT_CONSTANTS } from '../constants/security.js'
+import {
+    extractBearerToken,
+    isValidJWTFormat,
+    sendAuthError,
+    timingSafeStringEqual,
+} from '../utils/auth.js'
 import { logSecurityEvent } from '../utils/logger.js'
 import { RateLimiterFactory } from '../utils/rate-limiter.js'
-import { sendAuthenticationError } from '../utils/security-responses.js'
+import { sendJwtError } from '../utils/security-responses.js'
 import { TokenBlacklistFactory } from '../utils/token-blacklist.js'
 
 // Initialize security components
@@ -33,9 +41,9 @@ const authRateLimiter = RateLimiterFactory.createAuthLimiter()
 
 // JWT verification options for enhanced security
 const JWT_VERIFY_OPTIONS: jwt.VerifyOptions = {
-    algorithms: ['HS256'], // Restrict to specific algorithms to prevent algorithm confusion attacks
-    issuer: 'todoist-mcp', // Validate issuer
-    audience: 'todoist-mcp-client', // Validate audience
+    algorithms: [JWT_CONSTANTS.ALGORITHM], // Restrict to specific algorithms to prevent algorithm confusion attacks
+    issuer: JWT_CONSTANTS.ISSUER, // Validate issuer
+    audience: JWT_CONSTANTS.AUDIENCE, // Validate audience
     clockTolerance: 30, // Allow 30 seconds clock skew
     ignoreExpiration: false, // Ensure expiration is checked
     ignoreNotBefore: false, // Ensure nbf claim is checked
@@ -96,7 +104,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
             JWT_VERIFY_OPTIONS,
         ) as jwt.JwtPayload
 
-        // Validate required claims
+        // Validate required claims with enhanced security
         if (!decoded.sub || typeof decoded.sub !== 'string') {
             throw new Error('Missing or invalid subject claim')
         }
@@ -111,6 +119,21 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
         if (!decoded.exp || typeof decoded.exp !== 'number') {
             throw new Error('Missing or invalid expiration claim')
+        }
+
+        // Additional timing-safe validation for critical claims
+        if (!decoded.iss || !timingSafeStringEqual(decoded.iss, JWT_CONSTANTS.ISSUER)) {
+            throw new Error('Invalid issuer claim')
+        }
+
+        if (
+            !decoded.aud ||
+            (typeof decoded.aud === 'string' &&
+                !timingSafeStringEqual(decoded.aud, JWT_CONSTANTS.AUDIENCE)) ||
+            (Array.isArray(decoded.aud) &&
+                !decoded.aud.some((aud) => timingSafeStringEqual(aud, JWT_CONSTANTS.AUDIENCE)))
+        ) {
+            throw new Error('Invalid audience claim')
         }
 
         // Additional security checks
@@ -142,25 +165,47 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
 
         next()
     } catch (error) {
-        // Classify different types of JWT errors for better logging
+        // Classify different types of JWT errors for better logging and specific error codes
         let reason = 'invalid_token'
         let logLevel = 'warn'
+        let errorCode: number = ERROR_CODES.UNAUTHORIZED
+        let errorMessage = 'Authentication failed'
 
         if (error instanceof jwt.TokenExpiredError) {
             reason = 'token_expired'
+            errorCode = ERROR_CODES.JWT_TOKEN_EXPIRED
+            errorMessage = 'Token has expired'
         } else if (error instanceof jwt.JsonWebTokenError) {
             reason = 'token_malformed'
+            errorCode = ERROR_CODES.JWT_TOKEN_MALFORMED
+            errorMessage = 'Token is malformed'
         } else if (error instanceof jwt.NotBeforeError) {
             reason = 'token_not_active'
+            errorCode = ERROR_CODES.JWT_TOKEN_NOT_ACTIVE
+            errorMessage = 'Token is not yet active'
         } else if (error instanceof Error && error.message.includes('audience')) {
             reason = 'invalid_audience'
+            errorCode = ERROR_CODES.JWT_INVALID_AUDIENCE
+            errorMessage = 'Invalid token audience'
             logLevel = 'error' // Potential security issue
         } else if (error instanceof Error && error.message.includes('issuer')) {
             reason = 'invalid_issuer'
+            errorCode = ERROR_CODES.JWT_INVALID_ISSUER
+            errorMessage = 'Invalid token issuer'
             logLevel = 'error' // Potential security issue
         } else if (error instanceof Error && error.message.includes('algorithm')) {
             reason = 'invalid_algorithm'
+            errorCode = ERROR_CODES.JWT_INVALID_ALGORITHM
+            errorMessage = 'Invalid token algorithm'
             logLevel = 'error' // Potential security issue
+        } else if (error instanceof Error && error.message.includes('revoked')) {
+            reason = 'token_revoked'
+            errorCode = ERROR_CODES.JWT_TOKEN_REVOKED
+            errorMessage = 'Token has been revoked'
+        } else if (error instanceof Error && error.message.includes('claim')) {
+            reason = 'invalid_claims'
+            errorCode = ERROR_CODES.JWT_INVALID_CLAIMS
+            errorMessage = 'Invalid token claims'
         }
 
         logSecurityEvent(
@@ -170,6 +215,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
                 ip: clientIp,
                 userAgent: userAgent,
                 error: error instanceof Error ? error.message : 'Unknown error',
+                errorCode,
             },
             logLevel as 'warn' | 'error',
         )
@@ -177,7 +223,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
         // Record failed auth attempt (this increments the rate limit counter)
         authRateLimiter.recordAttempt(clientIp)
 
-        sendAuthenticationError(res, 'Authentication failed')
+        sendJwtError(res, errorCode, errorMessage)
         return
     }
 }

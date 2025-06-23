@@ -2,6 +2,7 @@
 
 import crypto from 'node:crypto'
 import jwt from 'jsonwebtoken'
+import { JWT_CONSTANTS } from '../constants/security.js'
 
 /**
  * Security setup utility for generating secure tokens and keys
@@ -23,8 +24,8 @@ function generateSampleToken(): string {
 
     const payload = {
         sub: 'user-1',
-        iss: 'todoist-mcp', // Issuer
-        aud: 'todoist-mcp-client', // Audience
+        iss: JWT_CONSTANTS.ISSUER, // Issuer
+        aud: JWT_CONSTANTS.AUDIENCE, // Audience
         iat: Math.floor(Date.now() / 1000),
         exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, // 24 hours
     }
