@@ -1,3 +1,9 @@
 {
-    "cSpell.words": ["modelcontextprotocol"]
+    "cSpell.words": ["modelcontextprotocol", "bunx", "doist"],
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.codeActionsOnSave": {
+        "quickfix.biome": "explicit",
+        "source.organizeImports.biome": "explicit"
+    }
 }
