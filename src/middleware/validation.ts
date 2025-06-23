@@ -1,7 +1,8 @@
 import type { NextFunction, Request, Response } from 'express'
 import { z } from 'zod'
-import { SECURITY_CONFIG } from '../config/security.js'
+import { ERROR_CODES, SECURITY_EVENT_TYPES } from '../constants/security.js'
 import { logSecurityEvent } from '../utils/logger.js'
+import { sendSecurityError } from '../utils/security-responses.js'
 
 // JSON-RPC 2.0 schema validation using Zod
 const jsonRpcSchema = z.object({
@@ -11,15 +12,8 @@ const jsonRpcSchema = z.object({
     params: z.record(z.unknown()).optional(),
 })
 
-// Security validation for payloads
+// Security validation for payloads (structural validation only)
 function validatePayloadSecurity(payload: unknown): void {
-    const jsonString = JSON.stringify(payload)
-
-    // Check payload size (50KB limit)
-    if (jsonString.length > SECURITY_CONFIG.MAX_REQUEST_PAYLOAD_SIZE) {
-        throw new Error('Request payload too large')
-    }
-
     // Check for deeply nested objects (potential DoS)
     function checkDepth(obj: unknown, depth = 0): void {
         if (depth > 10) {
@@ -57,53 +51,17 @@ export function validateMCPRequest(req: Request, res: Response, next: NextFuncti
     } catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Validation failed'
 
-        logSecurityEvent('Input validation failed', {
+        logSecurityEvent(SECURITY_EVENT_TYPES.VALIDATION_ERROR, {
             ip: req.ip,
             error: errorMessage,
             body: req.body,
             url: req.url,
         })
 
-        res.status(400).json({
-            jsonrpc: '2.0',
-            error: {
-                code: -32602,
-                message: 'Invalid params',
-                data: { details: errorMessage },
-            },
-            id: req.body?.id || null,
+        sendSecurityError(res, 400, ERROR_CODES.VALIDATION_ERROR, 'Invalid params', {
+            details: errorMessage,
         })
     }
-}
-
-// Request size limiting middleware
-export function limitRequestSize(req: Request, res: Response, next: NextFunction): void {
-    // Check Content-Length header for early rejection
-    const contentLength = req.get('Content-Length')
-
-    if (
-        contentLength &&
-        Number.parseInt(contentLength, 10) > SECURITY_CONFIG.MAX_REQUEST_PAYLOAD_SIZE
-    ) {
-        logSecurityEvent('Request size exceeded', {
-            ip: req.ip,
-            contentLength,
-            url: req.url,
-        })
-
-        res.status(413).json({
-            jsonrpc: '2.0',
-            error: {
-                code: -32000,
-                message: 'Request entity too large',
-            },
-            id: null,
-        })
-
-        return
-    }
-
-    next()
 }
 
 // Input sanitization for JSON-RPC requests
