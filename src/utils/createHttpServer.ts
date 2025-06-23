@@ -1,10 +1,12 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import express from 'express'
-import { SECURITY_CONFIG } from '../config/security.js'
 import { registerRoutes } from '../handlers/register-routes.js'
 import { globalErrorLog } from '../middleware/global-error-log.js'
-import { applySecurity } from '../middleware/security.js'
-import { logRequest } from './logger.js'
+import { jsonBodyParser } from '../middleware/json-body-parser.js'
+import { logRequest } from '../middleware/log-request.js'
+import { validatePostParseSize } from '../middleware/post-parse-validation.js'
+import { applySecurity } from '../middleware/security/security.js'
+import { urlEncodedParser } from '../middleware/url-encoded-parser.js'
 
 export function createHttpServer(createMcpServer: () => McpServer) {
     const httpServer = express()
@@ -15,20 +17,13 @@ export function createHttpServer(createMcpServer: () => McpServer) {
     // Request logging
     httpServer.use(logRequest)
 
-    // Body parsing with size limits
-    httpServer.use(
-        express.json({
-            limit: SECURITY_CONFIG.MAX_REQUEST_SIZE,
-            strict: true,
-        }),
-    )
+    // Body parsing without size limits (handled by validatePayloadSize middleware)
+    httpServer.use(jsonBodyParser)
 
-    httpServer.use(
-        express.urlencoded({
-            extended: false,
-            limit: SECURITY_CONFIG.MAX_REQUEST_SIZE,
-        }),
-    )
+    httpServer.use(urlEncodedParser)
+
+    // Post-parsing payload size validation
+    httpServer.use(validatePostParseSize)
 
     // Register routes with security
     registerRoutes(httpServer, createMcpServer)
