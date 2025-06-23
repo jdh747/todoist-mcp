@@ -1,7 +1,7 @@
 import { SECURITY_CONFIG, validateSecurityConfig } from './config/security.js'
-import { registerSignalHandlers } from './handlers/registerSignalHandlers.js'
-import { createHttpServer } from './utils/createHttpServer.js'
-import { createMCPServer } from './utils/createMCPServer.js'
+import { registerSignalHandlers } from './handlers/register-signal-handlers.js'
+import { createHttpServer } from './utils/create-http-server.js'
+import { createMCPServer } from './utils/create-mcp-server.js'
 import { logger } from './utils/logger.js'
 
 async function main() {

@@ -1,8 +1,8 @@
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import express from 'express'
 import { SECURITY_CONFIG } from '../config/security.js'
-import { registerRoutes } from '../handlers/registerRoutes.js'
-import { globalErrorLog } from '../middleware/globalErrorLog.js'
+import { registerRoutes } from '../handlers/register-routes.js'
+import { globalErrorLog } from '../middleware/global-error-log.js'
 import { applySecurity } from '../middleware/security.js'
 import { logRequest } from './logger.js'
 
