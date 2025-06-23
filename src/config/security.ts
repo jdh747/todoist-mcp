@@ -20,8 +20,8 @@ export const SECURITY_CONFIG = {
         process.env.FAILED_LOGIN_RATE_LIMIT_MAX_REQUESTS || '5',
     ), // 5 minutes
 
-    // CORS Settings
-    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3001'],
+    // CORS Settings: MCP Inspector(6274)
+    ALLOWED_ORIGINS: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:6274'],
 
     // Security Headers
     ENABLE_HELMET: process.env.ENABLE_HELMET !== 'false',

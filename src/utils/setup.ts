@@ -83,7 +83,7 @@ NODE_ENV=development
 RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 
-# CORS Settings
+# CORS Settings: MCP Inspector (6274)
 ALLOWED_ORIGINS=http://localhost:3001,https://yourdomain.com
 
 # Logging
