@@ -5,5 +5,8 @@
     "editor.codeActionsOnSave": {
         "quickfix.biome": "always",
         "source.organizeImports.biome": "always"
+    },
+    "[dotenv]": {
+        "editor.defaultFormatter": "foxundermoon.shell-format"
     }
 }
