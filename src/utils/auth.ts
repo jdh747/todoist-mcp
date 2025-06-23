@@ -1,3 +1,4 @@
+import crypto from 'node:crypto'
 import type { Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { SECURITY_CONFIG } from '../config/security.js'
@@ -12,8 +13,9 @@ export function generateToken(
 ): string {
     const now = Math.floor(Date.now() / 1000)
 
-    // Generate unique token ID for tracking
-    const tokenId = `${payload.sub}_${now}_${Math.random().toString(36).substring(2, 15)}`
+    // Generate cryptographically secure unique token ID for tracking
+    const randomBytes = crypto.randomBytes(16).toString('hex')
+    const tokenId = `${payload.sub}_${now}_${randomBytes}`
 
     const tokenPayload = {
         ...payload,
