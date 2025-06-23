@@ -43,6 +43,9 @@ export const SECURITY_CONFIG = {
 
     // Max request body size
     MAX_REQUEST_SIZE: process.env.MAX_REQUEST_SIZE || '10mb',
+
+    // Max request payload size (50KB)
+    MAX_REQUEST_PAYLOAD_SIZE: Number.parseInt(process.env.MAX_REQUEST_PAYLOAD_SIZE || '50000'),
 } as const
 
 // Validate required environment variables on startup

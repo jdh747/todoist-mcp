@@ -62,6 +62,9 @@ MAX_REQUEST_SIZE=10mb
 
 # Security Features
 ENABLE_HELMET=true
+
+# Limit the size of request payloads (50KB)
+MAX_REQUEST_PAYLOAD_SIZE=50000
 `
 }
 

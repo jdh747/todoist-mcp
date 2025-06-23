@@ -1,67 +1,66 @@
 {
-  "name": "todoist-mcp",
-  "version": "1.0.2",
-  "main": "index.js",
-  "type": "module",
-  "bin": {
-    "todoist-mcp": "./bin/index.js"
-  },
-  "scripts": {
-    "dev": "bun run --watch src/index.ts",
-    "build": "bun run build-tsc && bun run permissions",
-    "build-tsc": "bunx tsc",
-    "permissions": "bun -e \"require('fs').chmodSync('build/index.js', '755')\"",
-    "start": "bun run build/index.js",
-    "start:prod": "NODE_ENV=production bun run build/index.js",
-    "setup-security": "bunx tsx src/utils/setup.ts",
-    "clean": "rm -rf build",
-    "format": "biome check --write",
-    "format:fix": "biome check --write --fix",
-    "lint": "biome check",
-    "typecheck": "bunx tsc --noEmit",
-    "test": "bun test",
-    "prepare": "husky || true && bun run build",
-    "prebuild": "bun run clean && bun run typecheck"
-  },
-  "keywords": [
-    "ai",
-    "todoist",
-    "productivity",
-    "model-context-protocol",
-    "claude",
-    "task-management",
-    "project-management"
-  ],
-  "author": "Joshua Hayes",
-  "license": "MIT",
-  "description": "Connect this [Model Context Protocol](https://modelcontextprotocol.io/introduction) server to your LLM to interact with Todoist.",
-  "dependencies": {
-    "@doist/todoist-api-typescript": "5.0.1",
-    "@modelcontextprotocol/sdk": "1.13.0",
-    "bcrypt": "^6.0.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.5.0",
-    "express-rate-limit": "^7.5.1",
-    "express-validator": "^7.2.1",
-    "helmet": "^8.1.0",
-    "jsonwebtoken": "^9.0.2",
-    "winston": "^3.17.0"
-  },
-  "devDependencies": {
-    "@biomejs/biome": "1.9.4",
-    "@types/bcrypt": "^5.0.2",
-    "@types/cors": "^2.8.19",
-    "@types/express": "^5.0.3",
-    "@types/jsonwebtoken": "^9.0.10",
-    "@types/node": "^22.15.32",
-    "husky": "9.1.7",
-    "lint-staged": "16.1.2",
-    "tsx": "^4.20.3",
-    "typescript": "5.8.3"
-  },
-  "lint-staged": {
-    "*.{js,ts,json}": [
-      "bun run format"
-    ]
-  }
+    "name": "todoist-mcp",
+    "version": "1.0.2",
+    "main": "index.js",
+    "type": "module",
+    "bin": {
+        "todoist-mcp": "./bin/index.js"
+    },
+    "scripts": {
+        "dev": "bun run --watch src/index.ts",
+        "build": "bun run build-tsc && bun run permissions",
+        "build-tsc": "bunx tsc",
+        "permissions": "bun -e \"require('fs').chmodSync('build/index.js', '755')\"",
+        "start": "bun run build/index.js",
+        "start:prod": "NODE_ENV=production bun run build/index.js",
+        "setup-security": "bunx tsx src/utils/setup.ts",
+        "clean": "rm -rf build",
+        "format": "biome check --write",
+        "format:fix": "biome check --write --fix",
+        "lint": "biome check",
+        "typecheck": "bunx tsc --noEmit",
+        "test": "bun test",
+        "prepare": "husky || true && bun run build",
+        "prebuild": "bun run clean && bun run typecheck"
+    },
+    "keywords": [
+        "ai",
+        "todoist",
+        "productivity",
+        "model-context-protocol",
+        "claude",
+        "task-management",
+        "project-management"
+    ],
+    "author": "Joshua Hayes",
+    "license": "MIT",
+    "description": "Connect this [Model Context Protocol](https://modelcontextprotocol.io/introduction) server to your LLM to interact with Todoist.",
+    "dependencies": {
+        "@doist/todoist-api-typescript": "5.0.1",
+        "@modelcontextprotocol/sdk": "1.13.0",
+        "bcrypt": "^6.0.0",
+        "cors": "^2.8.5",
+        "dotenv": "^16.5.0",
+        "express-rate-limit": "^7.5.1",
+        "express-validator": "^7.2.1",
+        "helmet": "^8.1.0",
+        "jsonwebtoken": "^9.0.2",
+        "winston": "^3.17.0",
+        "zod": "^3.25.67"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "1.9.4",
+        "@types/bcrypt": "^5.0.2",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.3",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^22.15.32",
+        "husky": "9.1.7",
+        "lint-staged": "16.1.2",
+        "tsx": "^4.20.3",
+        "typescript": "5.8.3"
+    },
+    "lint-staged": {
+        "*.{js,ts,json}": ["bun run format"]
+    }
 }
