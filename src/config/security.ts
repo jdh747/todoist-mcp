@@ -35,6 +35,9 @@ export const SECURITY_CONFIG = {
     // Todoist API
     TODOIST_API_KEY: process.env.TODOIST_API_KEY || '',
 
+    // User Authorization
+    ALLOWED_USER_ID: process.env.ALLOWED_USER_ID || '',
+
     // Logging
     LOG_LEVEL: process.env.LOG_LEVEL || 'info',
 
@@ -50,8 +53,8 @@ export const SECURITY_CONFIG = {
 
 // Validate required environment variables on startup
 export function validateSecurityConfig() {
-    // Require JWT_SECRET and TODOIST_API_KEY
-    const requiredVars = ['JWT_SECRET', 'TODOIST_API_KEY']
+    // Require JWT_SECRET, TODOIST_API_KEY, and ALLOWED_USER_ID
+    const requiredVars = ['JWT_SECRET', 'TODOIST_API_KEY', 'ALLOWED_USER_ID']
     const missing = requiredVars.filter(
         (varName) => !process.env[varName] || process.env[varName]?.trim() === '',
     )
@@ -63,5 +66,10 @@ export function validateSecurityConfig() {
     // Validate JWT secret strength
     if (SECURITY_CONFIG.JWT_SECRET.length < 32) {
         throw new Error('JWT_SECRET must be at least 32 characters long')
+    }
+
+    // Validate user ID is not empty
+    if (SECURITY_CONFIG.ALLOWED_USER_ID.trim() === '') {
+        throw new Error('ALLOWED_USER_ID cannot be empty')
     }
 }

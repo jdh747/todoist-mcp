@@ -60,6 +60,9 @@ JWT_SECRET=${SECURITY_CONFIG.JWT_SECRET}
 # Todoist API
 TODOIST_API_KEY=your_todoist_api_key_here
 
+# User Authorization (specify the user ID allowed to access the MCP endpoint)
+ALLOWED_USER_ID=your_user_id_here
+
 # Server Configuration
 PORT=3000
 NODE_ENV=development

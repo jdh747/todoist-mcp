@@ -2,14 +2,22 @@ import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
 import type { Express, Request, Response } from 'express'
 import { authenticate } from '../middleware/auth.js'
+import { authorizeUser } from '../middleware/authorize-user.js'
 import { sanitizeInput } from '../middleware/sanitize-input.js'
 import { validateMCPRequest } from '../middleware/validate-mcp-request.js'
 import { logger } from '../utils/logger.js'
 import { sendMethodNotAllowedError } from '../utils/security-responses.js'
 
 export function registerRoutes(httpServer: Express, createMcpServer: () => McpServer) {
-    // Add authentication and validation middleware to the MCP endpoint
-    httpServer.post('/mcp', authenticate, validateMCPRequest, sanitizeInput, handlePost)
+    // Add authentication, authorization, and validation middleware to the MCP endpoint
+    httpServer.post(
+        '/mcp',
+        authenticate,
+        authorizeUser,
+        validateMCPRequest,
+        sanitizeInput,
+        handlePost,
+    )
     httpServer.get('/mcp', handleGet)
     httpServer.delete('/mcp', handleDelete)
 

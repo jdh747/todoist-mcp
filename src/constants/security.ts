@@ -26,6 +26,9 @@ export const ERROR_CODES = {
     JWT_INVALID_ALGORITHM: -32015,
     JWT_TOKEN_REVOKED: -32016,
     JWT_INVALID_CLAIMS: -32017,
+
+    // Authorization error codes
+    USER_NOT_AUTHORIZED: -32020,
 } as const
 
 // Security event types
