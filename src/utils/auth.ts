@@ -1,6 +1,7 @@
 import type { Response } from 'express'
 import jwt from 'jsonwebtoken'
 import { SECURITY_CONFIG } from '../config/security.js'
+import { sendAuthenticationError } from './security-responses.js'
 
 export function generateToken(
     payload: {
@@ -50,14 +51,7 @@ export function isValidJWTFormat(token: string): boolean {
 }
 
 export function sendAuthError(res: Response, message: string): void {
-    res.status(401).json({
-        jsonrpc: '2.0',
-        error: {
-            code: -32001,
-            message,
-        },
-        id: null,
-    })
+    sendAuthenticationError(res, message)
 }
 
 // Extend Request interface to include auth data

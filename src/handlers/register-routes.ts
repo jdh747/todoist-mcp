@@ -4,6 +4,7 @@ import type { Express, Request, Response } from 'express'
 import { authenticate } from '../middleware/auth.js'
 import { limitRequestSize, sanitizeInput, validateMCPRequest } from '../middleware/validation.js'
 import { logger } from '../utils/logger.js'
+import { sendMethodNotAllowedError } from '../utils/security-responses.js'
 
 export function registerRoutes(httpServer: Express, createMcpServer: () => McpServer) {
     // Add authentication and validation middleware to the MCP endpoint
@@ -45,31 +46,11 @@ export function registerRoutes(httpServer: Express, createMcpServer: () => McpSe
 
     async function handleGet(_req: Request, res: Response): Promise<void> {
         logger.warn('Received GET request on MCP endpoint - method not allowed')
-
-        res.writeHead(405).end(
-            JSON.stringify({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32000,
-                    message: 'Method not allowed.',
-                },
-                id: null,
-            }),
-        )
+        sendMethodNotAllowedError(res)
     }
 
     async function handleDelete(_req: Request, res: Response): Promise<void> {
         logger.warn('Received DELETE request on MCP endpoint - method not allowed')
-
-        res.writeHead(405).end(
-            JSON.stringify({
-                jsonrpc: '2.0',
-                error: {
-                    code: -32000,
-                    message: 'Method not allowed.',
-                },
-                id: null,
-            }),
-        )
+        sendMethodNotAllowedError(res)
     }
 }

@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import { logger } from '../utils/logger.js'
+import { sendInternalServerError } from '../utils/security-responses.js'
 
 export function globalErrorLog(
     err: Error | string | unknown,
@@ -28,14 +29,7 @@ export function globalErrorLog(
     })
 
     if (!res.headersSent) {
-        res.status(500).json({
-            jsonrpc: '2.0',
-            error: {
-                code: -32603,
-                message: 'Internal server error',
-            },
-            id: null,
-        })
+        sendInternalServerError(res)
     }
 
     next()

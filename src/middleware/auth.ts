@@ -24,6 +24,7 @@ import { SECURITY_CONFIG } from '../config/security.js'
 import { extractBearerToken, isValidJWTFormat, sendAuthError } from '../utils/auth.js'
 import { logSecurityEvent } from '../utils/logger.js'
 import { RateLimiterFactory } from '../utils/rate-limiter.js'
+import { sendAuthenticationError } from '../utils/security-responses.js'
 import { TokenBlacklistFactory } from '../utils/token-blacklist.js'
 
 // Initialize security components
@@ -176,15 +177,7 @@ export function authenticate(req: Request, res: Response, next: NextFunction): v
         // Record failed auth attempt (this increments the rate limit counter)
         authRateLimiter.recordAttempt(clientIp)
 
-        res.status(401).json({
-            jsonrpc: '2.0',
-            error: {
-                code: -32001,
-                message: 'Authentication failed',
-            },
-            id: null,
-        })
-
+        sendAuthenticationError(res, 'Authentication failed')
         return
     }
 }
