@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 
+import crypto from 'node:crypto'
 import { SECURITY_CONFIG } from '../config/security.js'
 import { generateToken } from './auth.js'
 
@@ -9,18 +10,24 @@ import { generateToken } from './auth.js'
 
 // Main setup function
 export function setup() {
-    const token = generateToken({
-        sub: 'sample_user',
-        name: 'Sample User',
-        email: 'sample_user@example.com',
-    })
+    const jwtSecret = generateJWTSecret()
+
+    const token = generateToken(
+        {
+            sub: 'sample_user',
+            name: 'Sample User',
+            email: 'sample_user@example.com',
+        },
+        SECURITY_CONFIG.JWT_EXPIRES_IN,
+        jwtSecret,
+    )
 
     console.log('🔐 Todoist MCP Security Setup')
     console.log('================================')
     console.log()
 
     console.log('Generated JWT Secret (512-bit):')
-    console.log(SECURITY_CONFIG.JWT_SECRET)
+    console.log(jwtSecret)
     console.log()
 
     console.log('Sample JWT Token:')
@@ -29,7 +36,7 @@ export function setup() {
 
     console.log('Environment Variables (.env file):')
     console.log('-----------------------------------')
-    console.log(generateEnvExample())
+    console.log(generateEnvExample(jwtSecret))
 
     console.log()
     console.log('🛡️  Security Recommendations:')
@@ -47,15 +54,20 @@ export function setup() {
     console.log()
 }
 
-// Run setup if called directly
-if (import.meta.url === `file://${process.argv[1]}`) {
-    setup()
+// Generate a cryptographically secure random string
+function generateSecureKey(length = 32): string {
+    return crypto.randomBytes(length).toString('hex')
+}
+
+// Generate JWT secret
+function generateJWTSecret(): string {
+    return generateSecureKey(64) // 512 bits
 }
 
 // Create .env.example file content
-function generateEnvExample(): string {
+function generateEnvExample(jwtSecret: string): string {
     return `# Security Configuration
-JWT_SECRET=${SECURITY_CONFIG.JWT_SECRET}
+JWT_SECRET=${jwtSecret}
 
 # Todoist API
 TODOIST_API_KEY=your_todoist_api_key_here
@@ -89,4 +101,9 @@ ENABLE_HELMET=true
 # Limit the size of request payloads (50KB)
 MAX_REQUEST_PAYLOAD_SIZE=50000
 `
+}
+
+// Run setup if called directly
+if (import.meta.url === `file://${process.argv[1]}`) {
+    setup()
 }

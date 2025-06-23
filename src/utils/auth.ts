@@ -11,6 +11,7 @@ export function generateToken(
         [key: string]: unknown // Additional claims
     },
     expiresIn: string = SECURITY_CONFIG.JWT_EXPIRES_IN,
+    jwtSecret?: string,
 ): string {
     const now = Math.floor(Date.now() / 1000)
 
@@ -27,7 +28,8 @@ export function generateToken(
         // nbf (not before) can be added if needed
     }
 
-    return jwt.sign(tokenPayload, SECURITY_CONFIG.JWT_SECRET, {
+    const secretToUse = jwtSecret || SECURITY_CONFIG.JWT_SECRET
+    return jwt.sign(tokenPayload, secretToUse, {
         expiresIn,
         algorithm: JWT_CONSTANTS.ALGORITHM, // Explicitly specify algorithm
     } as jwt.SignOptions)
