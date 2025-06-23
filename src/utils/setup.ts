@@ -14,7 +14,7 @@ export function setup() {
 
     const token = generateToken(
         {
-            sub: 'sample_user',
+            sub: 'joshua-hayes',
             name: 'Sample User',
             email: 'sample_user@example.com',
         },
@@ -84,7 +84,7 @@ RATE_LIMIT_WINDOW_MS=900000
 RATE_LIMIT_MAX_REQUESTS=100
 
 # CORS Settings: MCP Inspector (6274)
-ALLOWED_ORIGINS=http://localhost:3001,https://yourdomain.com
+ALLOWED_ORIGINS=http://localhost:6274
 
 # Logging
 LOG_LEVEL=info
