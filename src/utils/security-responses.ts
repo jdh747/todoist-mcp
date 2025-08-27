@@ -89,3 +89,24 @@ export function sendJwtAuthError(res: Response, message = 'Authentication failed
 export function sendInternalServerError(res: Response): void {
     sendSecurityError(res, 500, ERROR_CODES.INTERNAL_ERROR, 'Internal server error')
 }
+
+export function sendOAuthError(res: Response, errorCode: number, message: string): void {
+    let statusCode = 401
+    
+    // Map OAuth error codes to appropriate HTTP status codes
+    switch (errorCode) {
+        case ERROR_CODES.TOO_MANY_REQUESTS:
+            statusCode = 429
+            break
+        case ERROR_CODES.SERVICE_UNAVAILABLE:
+            statusCode = 503
+            break
+        case ERROR_CODES.OAUTH_INSUFFICIENT_SCOPE:
+            statusCode = 403
+            break
+        default:
+            statusCode = 401
+    }
+    
+    sendSecurityError(res, statusCode, errorCode, message)
+}

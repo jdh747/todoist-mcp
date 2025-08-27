@@ -29,6 +29,16 @@ export const ERROR_CODES = {
 
     // Authorization error codes
     USER_NOT_AUTHORIZED: -32020,
+
+    // OAuth 2.1 specific error codes
+    OAUTH_TOKEN_INACTIVE: -32030,
+    OAUTH_TOKEN_EXPIRED: -32031,
+    OAUTH_INVALID_AUDIENCE: -32032,
+    OAUTH_INSUFFICIENT_SCOPE: -32033,
+    OAUTH_INVALID_CLAIMS: -32034,
+    OAUTH_INTROSPECTION_FAILED: -32035,
+    TOO_MANY_REQUESTS: -32036,
+    SERVICE_UNAVAILABLE: -32037,
 } as const
 
 // Security event types

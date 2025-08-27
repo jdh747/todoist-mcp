@@ -1,19 +1,19 @@
-import type { TodoistApi } from '@doist/todoist-api-typescript'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { z } from 'zod'
+import { withToolContext } from '../utils/mcp-tool-context.js'
 
-export function registerGetTasks(server: McpServer, api: TodoistApi) {
+export function registerGetTasks(server: McpServer) {
     server.tool(
         'get-tasks',
         'Get all tasks from Todoist',
         {
             projectId: z.string().optional(),
         },
-        async ({ projectId }) => {
-            let response = await api.getTasks({ projectId })
+        withToolContext(async ({ projectId }, context) => {
+            let response = await context.api.getTasks({ projectId })
             const tasks = response.results
             while (response.nextCursor) {
-                response = await api.getTasks({ projectId, cursor: response.nextCursor })
+                response = await context.api.getTasks({ projectId, cursor: response.nextCursor })
                 tasks.push(...response.results)
             }
             return {
@@ -22,6 +22,6 @@ export function registerGetTasks(server: McpServer, api: TodoistApi) {
                     text: JSON.stringify(task, null, 2),
                 })),
             }
-        },
+        }),
     )
 }

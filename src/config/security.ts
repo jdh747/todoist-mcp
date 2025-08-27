@@ -4,20 +4,16 @@ import dotenv from 'dotenv'
 dotenv.config()
 
 export const SECURITY_CONFIG = {
-    // JWT Settings
-    JWT_SECRET: process.env.JWT_SECRET || '',
-    JWT_EXPIRES_IN: process.env.JWT_EXPIRES_IN || '24h',
-
     // Rate Limiting
     RATE_LIMIT_WINDOW_MS: Number.parseInt(process.env.RATE_LIMIT_WINDOW_MS || '900000'), // 15 minutes
     RATE_LIMIT_MAX_REQUESTS: Number.parseInt(process.env.RATE_LIMIT_MAX_REQUESTS || '100'),
 
-    // Rate limit failed login attempts
-    FAILED_LOGIN_RATE_LIMIT_WINDOW_MS: Number.parseInt(
-        process.env.FAILED_LOGIN_RATE_LIMIT_WINDOW_MS || '300000',
+    // Rate limit failed auth attempts
+    FAILED_AUTH_RATE_LIMIT_WINDOW_MS: Number.parseInt(
+        process.env.FAILED_AUTH_RATE_LIMIT_WINDOW_MS || '300000',
     ),
-    FAILED_LOGIN_RATE_LIMIT_MAX_REQUESTS: Number.parseInt(
-        process.env.FAILED_LOGIN_RATE_LIMIT_MAX_REQUESTS || '5',
+    FAILED_AUTH_RATE_LIMIT_MAX_REQUESTS: Number.parseInt(
+        process.env.FAILED_AUTH_RATE_LIMIT_MAX_REQUESTS || '5',
     ), // 5 minutes
 
     // CORS Settings: MCP Inspector(6274)
@@ -31,12 +27,6 @@ export const SECURITY_CONFIG = {
 
     // Environment
     NODE_ENV: process.env.NODE_ENV || 'development',
-
-    // Todoist API
-    TODOIST_API_KEY: process.env.TODOIST_API_KEY || '',
-
-    // User Authorization
-    ALLOWED_USER_ID: process.env.ALLOWED_USER_ID || '',
 
     // Logging
     LOG_LEVEL: process.env.LOG_LEVEL || 'info',
@@ -53,23 +43,7 @@ export const SECURITY_CONFIG = {
 
 // Validate required environment variables on startup
 export function validateSecurityConfig() {
-    // Require JWT_SECRET, TODOIST_API_KEY, and ALLOWED_USER_ID
-    const requiredVars = ['JWT_SECRET', 'TODOIST_API_KEY', 'ALLOWED_USER_ID']
-    const missing = requiredVars.filter(
-        (varName) => !process.env[varName] || process.env[varName]?.trim() === '',
-    )
-
-    if (missing.length > 0) {
-        throw new Error(`Missing required environment variables: ${missing.join(', ')}`)
-    }
-
-    // Validate JWT secret strength
-    if (SECURITY_CONFIG.JWT_SECRET.length < 32) {
-        throw new Error('JWT_SECRET must be at least 32 characters long')
-    }
-
-    // Validate user ID is not empty
-    if (SECURITY_CONFIG.ALLOWED_USER_ID.trim() === '') {
-        throw new Error('ALLOWED_USER_ID cannot be empty')
-    }
+    // OAuth configuration is validated by the oauth module
+    // Basic security validation only
+    console.log('OAuth 2.1 mode: Security configuration using OAuth instead of JWT')
 }

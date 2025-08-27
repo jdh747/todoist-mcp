@@ -1,4 +1,3 @@
-import { TodoistApi } from '@doist/todoist-api-typescript'
 import type { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { registerAddComment } from '../mcp-tools/add-comment.js'
 import { registerAddLabel } from '../mcp-tools/add-label.js'
@@ -41,60 +40,57 @@ import { registerUpdateSection } from '../mcp-tools/update-section.js'
 import { registerUpdateTask } from '../mcp-tools/update-task.js'
 
 export function registerTodoistTools(server: McpServer) {
-    if (!process.env.TODOIST_API_KEY) {
-        throw new Error('TODOIST_API_KEY environment variable is required')
-    }
-
-    const api = new TodoistApi(process.env.TODOIST_API_KEY)
+    // OAuth-based registration - no static API key required
+    // Individual tools will get per-user API clients dynamically
 
     /* Projects */
-    registerAddProject(server, api)
-    registerGetProjects(server, api)
-    registerGetProject(server, api)
-    registerUpdateProject(server, api)
-    registerDeleteProject(server, api)
+    registerAddProject(server)
+    registerGetProjects(server)
+    registerGetProject(server)
+    registerUpdateProject(server)
+    registerDeleteProject(server)
 
     /* Collaborators */
-    registerGetProjectCollaborators(server, api)
+    registerGetProjectCollaborators(server)
 
     /* Tasks */
-    registerAddTask(server, api)
-    registerQuickAddTask(server, api)
-    registerGetTask(server, api)
-    registerGetTasks(server, api)
-    registerGetTasksCompletedByCompletionDate(server, api)
-    registerGetTasksCompletedByDueDate(server, api)
-    registerGetProductivityStats(server, api)
-    registerUpdateTask(server, api)
-    registerCloseTask(server, api)
-    registerMoveTasks(server, api)
-    registerDeleteTask(server, api)
-    registerReopenTask(server, api)
-    registerGetTasksByFilter(server, api)
+    registerAddTask(server)
+    registerQuickAddTask(server)
+    registerGetTask(server)
+    registerGetTasks(server)
+    registerGetTasksCompletedByCompletionDate(server)
+    registerGetTasksCompletedByDueDate(server)
+    registerGetProductivityStats(server)
+    registerUpdateTask(server)
+    registerCloseTask(server)
+    registerMoveTasks(server)
+    registerDeleteTask(server)
+    registerReopenTask(server)
+    registerGetTasksByFilter(server)
 
     /* Sections */
-    registerAddSection(server, api)
-    registerGetSection(server, api)
-    registerGetSections(server, api)
-    registerUpdateSection(server, api)
-    registerDeleteSection(server, api)
+    registerAddSection(server)
+    registerGetSection(server)
+    registerGetSections(server)
+    registerUpdateSection(server)
+    registerDeleteSection(server)
 
     /* Comments */
-    registerAddComment(server, api)
-    registerGetComment(server, api)
-    registerGetComments(server, api)
-    registerUpdateComment(server, api)
-    registerDeleteComment(server, api)
-    registerGetTaskComments(server, api)
-    registerGetProjectComments(server, api)
+    registerAddComment(server)
+    registerGetComment(server)
+    registerGetComments(server)
+    registerUpdateComment(server)
+    registerDeleteComment(server)
+    registerGetTaskComments(server)
+    registerGetProjectComments(server)
 
     /* Labels */
-    registerAddLabel(server, api)
-    registerDeleteLabel(server, api)
-    registerUpdateLabel(server, api)
-    registerGetLabel(server, api)
-    registerGetLabels(server, api)
-    registerGetSharedLabels(server, api)
-    registerRemoveSharedLabel(server, api)
-    registerRenameSharedLabel(server, api)
+    registerAddLabel(server)
+    registerDeleteLabel(server)
+    registerUpdateLabel(server)
+    registerGetLabel(server)
+    registerGetLabels(server)
+    registerGetSharedLabels(server)
+    registerRemoveSharedLabel(server)
+    registerRenameSharedLabel(server)
 }

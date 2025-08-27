@@ -74,11 +74,20 @@ declare global {
         interface Request {
             mcpAuth?: {
                 authorized: boolean
-                method: 'jwt'
+                method: 'jwt' | 'oauth2.1'
                 identifier?: string
-                tokenId?: string // jti claim for token tracking
+                tokenId?: string // jti claim for token tracking (JWT only)
                 issuedAt?: number // iat claim
                 expiresAt?: number // exp claim
+                scopes?: string[] // OAuth scopes
+                clientId?: string // OAuth client ID
+                username?: string // OAuth username
+            }
+            todoistAuth?: {
+                todoistToken: string
+                todoistUserId: string
+                connectedAt: Date
+                lastUsed: Date
             }
         }
     }

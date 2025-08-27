@@ -56,7 +56,7 @@ This is a **security-first implementation** with enterprise-grade features:
 
 #### Configuration & Validation
 - **Security Config**: `src/config/security.ts` - Centralized configuration with validation
-- **Environment Validation**: Required JWT_SECRET (min 32 chars) and TODOIST_API_KEY on startup
+- **Environment Validation**: Required JWT_SECRET (min 32 chars), TODOIST_API_KEY, and ALLOWED_USER_ID on startup
 
 #### Middleware Pipeline (Applied in Order)
 1. **Security Headers**: `src/middleware/security/security.ts` - Orchestrates security middleware
@@ -65,15 +65,16 @@ This is a **security-first implementation** with enterprise-grade features:
    - `src/middleware/security/rate-limit-config.ts` - Rate limiting configuration
    - `src/middleware/security/request-timeout.ts` - Request timeout handling
 2. **Authentication**: `src/middleware/auth.ts` - JWT Bearer tokens validation
-3. **Request Processing**:
+3. **Authorization**: `src/middleware/authorize-user.ts` - User-specific access control
+4. **Request Processing**:
    - `src/middleware/log-request.ts` - Request logging
    - `src/middleware/json-body-parser.ts` - JSON parsing
    - `src/middleware/url-encoded-parser.ts` - URL-encoded parsing
    - `src/middleware/post-parse-validation.ts` - Post-parsing size validation
    - `src/middleware/sanitize-input.ts` - Input sanitization
    - `src/middleware/validate-mcp-request.ts` - MCP request validation
-4. **Route Handling**: `src/handlers/register-routes.ts` - Secure route registration
-5. **Error Handling**: `src/middleware/global-error-log.ts` - Global error logging
+5. **Route Handling**: `src/handlers/register-routes.ts` - Secure route registration
+6. **Error Handling**: `src/middleware/global-error-log.ts` - Global error logging
 
 #### Security Utilities
 - **Token Management**: `src/utils/token-blacklist.ts` - JWT token blacklisting
@@ -112,6 +113,7 @@ The `src/mcp-tools/` directory contains 35 individual tool implementations for e
 ```env
 JWT_SECRET=your_jwt_secret_here              # Min 32 characters, 512-bit recommended
 TODOIST_API_KEY=your_todoist_api_key_here    # From Todoist developer settings
+ALLOWED_USER_ID=your_user_id_here            # User ID authorized to access MCP endpoint
 ```
 
 ### Optional Configuration
@@ -171,6 +173,7 @@ LOG_LEVEL=info
 
 ### Security Requirements
 - All endpoints require authentication (JWT Bearer token)
+- MCP endpoint restricted to single authorized user (ALLOWED_USER_ID)
 - No anonymous access permitted
 - Comprehensive input validation and sanitization
 - Rate limiting on all routes with failed login tracking
